@@ -27,9 +27,13 @@ async def main():
     args = parser.parse_args()
 
     auth = Auth.Token(args.token)
-    gh = Github(base_url=args.url if args.url else None, auth=auth)
 
-    tasks = []
+    if args.url:
+        gh = Github(base_url=args.url, auth=auth)
+    else:
+        gh = Github(auth=auth)
+
+    actions = []
     for repo in args.repos:
         logging.info(f'Preparing actions for: {repo}')
         for action in args.actions:
