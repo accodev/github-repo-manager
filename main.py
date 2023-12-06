@@ -3,6 +3,7 @@ import logging.config
 import argparse
 import asyncio
 import action_factory
+from result import Result
 from github import Github, Auth
 
 
@@ -66,7 +67,14 @@ async def main():
             actions.append(action_factory.build(action, repo).run())
 
     logging.info(f'Execute {len(actions)} actions')
-    await asyncio.gather(*actions, return_exceptions=True)
+    results: list[Result] = await asyncio.gather(*actions, return_exceptions=True)
+
+    good_results = [result for result in results if result.code == 0]
+    logging.info(f'{len(good_results)} out of {len(actions)} actions executed succesfully')
+
+    bad_results = (result for result in results if result.code != 0)
+    for bad_result in bad_results:
+        logging.error(f'Action: {bad_result.action_name}, Message: {bad_result.message}, Code {bad_result.code}')
 
     logging.debug('Close GitHub connection')
     gh.close()
