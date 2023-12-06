@@ -14,8 +14,10 @@ class SampleAction(Action):
             commits = self.repo.get_commits()
             for commit in commits:
                 logging.debug(commit)
+            return Result('Ok', 0)
         except GithubException:
             logger.exception('GithubException')
+            return Result('Exception', 1)
 
 
 def build(name: str, repo):
