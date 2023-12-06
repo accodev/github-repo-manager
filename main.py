@@ -49,5 +49,5 @@ if __name__ == '__main__':
     try:
         event_loop = asyncio.get_event_loop()
         event_loop.run_until_complete(main())
-    except Exception as e:
-        logger.exception('Exception: {e}', e)
+    except:
+        logger.exception('Exception')
