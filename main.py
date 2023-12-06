@@ -10,17 +10,17 @@ logger = logging.getLogger()
 
 async def main():
     parser = argparse.ArgumentParser(prog='github-manager')
-    parser.add_argument('-t|--token',
+    parser.add_argument('-t', '--token',
                         help='GitHub Personal Access Token with the required scopes.',
                         required=True)
-    parser.add_argument('-u|--url',
+    parser.add_argument('-u', '--url',
                         help='The url of the enterprise instance of GitHub',
                         required=False)
-    parser.add_argument('-r|--repos',
+    parser.add_argument('-r', '--repos',
                         help='The repositories on which to apply the action(s)',
                         nargs='+',
                         required=True)
-    parser.add_argument('-a|--actions',
+    parser.add_argument('-a', '--actions',
                         help='The actions to apply',
                         nargs='+',
                         required=True)
