@@ -2,10 +2,30 @@ import logging
 import logging.config
 import argparse
 import asyncio
+import action_factory
 from github import Github, Auth
+
 
 logging.config.fileConfig('logging.conf')
 logger = logging.getLogger()
+
+
+def validate_args(args):
+    if not isinstance(args.token, str):
+        raise TypeError(f'args.token ({args.token}) not of type str')
+
+    if args.url:
+        if not isinstance(args.url, str):
+            raise TypeError(f'args.url ({args.url}) not of type str')
+
+    if not isinstance(args.owner, str):
+        raise TypeError(f'args.owner ({args.owner}) not of type str')
+
+    if not isinstance(args.repos, list):
+        raise TypeError(f'args.repos ({args.repos}) not of type list')
+
+    if not isinstance(args.actions, list):
+        raise TypeError(f'args.actions ({args.actions}) not of type list')
 
 
 async def main():
@@ -16,6 +36,9 @@ async def main():
     parser.add_argument('-u', '--url',
                         help='The url of the enterprise instance of GitHub',
                         required=False)
+    parser.add_argument('-o', '--owner',
+                        help='The owner of the repositories',
+                        required=True)
     parser.add_argument('-r', '--repos',
                         help='The repositories on which to apply the action(s)',
                         nargs='+',
@@ -26,8 +49,9 @@ async def main():
                         required=True)
     args = parser.parse_args()
 
-    auth = Auth.Token(args.token)
+    validate_args(args)
 
+    auth = Auth.Token(args.token)
     if args.url:
         gh = Github(base_url=args.url, auth=auth)
     else:
@@ -36,12 +60,13 @@ async def main():
     actions = []
     for repo in args.repos:
         logging.info(f'Preparing actions for: {repo}')
+        repo = gh.get_repo(f'{args.owner}/{repo}')
         for action in args.actions:
             logging.info(f'Adding {action}')
-            actions.append(lambda: action)
+            actions.append(action_factory.build(action, repo).run())
 
     logging.info(f'Execute {len(actions)} actions')
-    #await asyncio.gather(*actions, return_exceptions=True)
+    await asyncio.gather(*actions, return_exceptions=True)
 
     logging.debug('Close GitHub connection')
     gh.close()
