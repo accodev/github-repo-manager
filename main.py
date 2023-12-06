@@ -38,10 +38,12 @@ async def main():
         logging.info(f'Preparing actions for: {repo}')
         for action in args.actions:
             logging.info(f'Adding {action}')
-            tasks.append(lambda: action)
+            actions.append(lambda: action)
 
-    await asyncio.gather(*tasks, return_exceptions=True)
+    logging.info(f'Execute {len(actions)} actions')
+    #await asyncio.gather(*actions, return_exceptions=True)
 
+    logging.debug('Close GitHub connection')
     gh.close()
 
 
