@@ -49,5 +49,4 @@ def build(name: str, repo) -> Action:
     if not module:
         raise NoActionFoundError()
 
-    logger.debug(f'Calling module.build()')
     return module.build(name, repo)
