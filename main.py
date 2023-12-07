@@ -29,29 +29,7 @@ def validate_args(args):
         raise TypeError(f'args.actions ({args.actions}) not of type list')
 
 
-async def main():
-    parser = argparse.ArgumentParser(prog='github-manager')
-    parser.add_argument('-t', '--token',
-                        help='GitHub Personal Access Token with the required scopes.',
-                        required=True)
-    parser.add_argument('-u', '--url',
-                        help='The url of the enterprise instance of GitHub',
-                        required=False)
-    parser.add_argument('-o', '--owner',
-                        help='The owner of the repositories',
-                        required=True)
-    parser.add_argument('-r', '--repos',
-                        help='The repositories on which to apply the action(s)',
-                        nargs='+',
-                        required=True)
-    parser.add_argument('-a', '--actions',
-                        help='The actions to apply',
-                        nargs='+',
-                        required=True)
-    args = parser.parse_args()
-
-    validate_args(args)
-
+async def main(args):
     auth = Auth.Token(args.token)
     if args.url:
         gh = Github(base_url=args.url, auth=auth)
@@ -80,9 +58,33 @@ async def main():
     gh.close()
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(prog='github-manager')
+    parser.add_argument('-t', '--token',
+                        help='GitHub Personal Access Token with the required scopes.',
+                        required=True)
+    parser.add_argument('-u', '--url',
+                        help='The url of the enterprise instance of GitHub',
+                        required=False)
+    parser.add_argument('-o', '--owner',
+                        help='The owner of the repositories',
+                        required=True)
+    parser.add_argument('-r', '--repos',
+                        help='The repositories on which to apply the action(s)',
+                        nargs='+',
+                        required=True)
+    parser.add_argument('-a', '--actions',
+                        help='The actions to apply',
+                        nargs='+',
+                        required=True)
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
+    args_ = parse_args()
+    validate_args(args_)
     try:
         event_loop = asyncio.get_event_loop()
-        event_loop.run_until_complete(main())
+        event_loop.run_until_complete(main(args_))
     except:
         logger.exception('Exception')
