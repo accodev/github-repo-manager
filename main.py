@@ -44,10 +44,9 @@ async def main(args):
     actions = []
     for repo in args.repos:
         logging.info(f'Preparing actions for: {repo}')
-        repo = gh.get_repo(f'{args.owner}/{repo}')
         for action in args.actions:
             logging.info(f'Adding {action}')
-            actions.append(execute(action_factory.build(action, repo)))
+            actions.append(execute(action_factory.build(action, repo, gh, args)))
 
     logging.info(f'Execute {len(actions)} actions')
     results = await asyncio.gather(*actions, return_exceptions=True)

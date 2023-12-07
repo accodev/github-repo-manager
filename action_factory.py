@@ -32,7 +32,7 @@ def try_import(name: str) -> [object, None]:
         return None
 
 
-def build(name: str, repo) -> Action:
+def build(name: str, repo, gh, args) -> Action:
     import sys
     import os
     import pathlib
@@ -49,4 +49,4 @@ def build(name: str, repo) -> Action:
     if not module:
         raise NoActionFoundError()
 
-    return module.build(name, repo)
+    return module.build(name, repo, gh, args)
