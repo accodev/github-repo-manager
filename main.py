@@ -7,8 +7,8 @@ from result import Result
 from github import Github, Auth
 
 
-logging.config.fileConfig('logging.conf')
-logger = logging.getLogger()
+logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
+logger = logging.getLogger(__name__)
 
 
 def validate_args(args):

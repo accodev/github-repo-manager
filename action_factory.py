@@ -3,7 +3,7 @@ import importlib
 
 from action import Action
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class NoActionFoundError(Exception):

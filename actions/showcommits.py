@@ -5,7 +5,7 @@ from result import Result
 from github.GithubException import *
 
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class SampleAction(Action):
