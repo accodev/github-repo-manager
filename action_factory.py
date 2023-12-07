@@ -21,6 +21,10 @@ def try_import(name: str) -> [object, None]:
         logger.debug(f'Trying to import {name} module')
         module = importlib.import_module(name)
         logger.debug(f'Module {name} imported')
+        # check if module.build function exists
+        assert module.build
+        logger.debug(f'{module}')
+        logger.debug(f'{module.build}')
         MODULE_CACHE[name] = module
         return module
     except ModuleNotFoundError:
