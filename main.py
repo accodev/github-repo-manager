@@ -3,6 +3,7 @@ import logging.config
 import argparse
 import asyncio
 import action_factory
+from action import Action
 from result import Result
 from github import Github, Auth
 
@@ -36,16 +37,20 @@ async def main(args):
     else:
         gh = Github(auth=auth)
 
+    async def execute(act: Action) -> [Result, None]:
+        logging.info(f'Executing {act.name} on {act.repo}')
+        return await act.run()
+
     actions = []
     for repo in args.repos:
         logging.info(f'Preparing actions for: {repo}')
         repo = gh.get_repo(f'{args.owner}/{repo}')
         for action in args.actions:
             logging.info(f'Adding {action}')
-            actions.append(action_factory.build(action, repo).run())
+            actions.append(execute(action_factory.build(action, repo)))
 
     logging.info(f'Execute {len(actions)} actions')
-    results: list[Result] = await asyncio.gather(*actions, return_exceptions=True)
+    results = await asyncio.gather(*actions, return_exceptions=True)
 
     good_results = [result for result in results if result.code == 0]
     logging.info(f'{len(good_results)} out of {len(actions)} actions executed succesfully')
