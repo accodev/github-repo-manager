@@ -53,7 +53,7 @@ async def main(args):
     results = await asyncio.gather(*actions, return_exceptions=True)
 
     good_results = [result for result in results if result.code == 0]
-    logging.info(f'{len(good_results)} out of {len(actions)} actions executed succesfully')
+    logging.info(f'{len(good_results)} out of {len(actions)} actions executed successfully')
 
     bad_results = (result for result in results if result.code != 0)
     for bad_result in bad_results:
