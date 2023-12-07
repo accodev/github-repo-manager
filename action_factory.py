@@ -10,11 +10,18 @@ class NoActionFoundError(Exception):
     pass
 
 
+MODULE_CACHE = {}
+
+
 def try_import(name: str) -> [object, None]:
+    if name in MODULE_CACHE:
+        return MODULE_CACHE[name]
+
     try:
         logger.debug(f'Trying to import {name} module')
         module = importlib.import_module(name)
         logger.debug(f'Module {name} imported')
+        MODULE_CACHE[name] = module
         return module
     except ModuleNotFoundError:
         logger.debug(f'Could not import {name}')
